@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Battle Ship Game</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(135deg,#001f3f,#004080,#0080ff);
+    overflow:hidden;
+}
+
+.container{
+    text-align:center;
+    color:white;
+}
+
+h1{
+    margin-bottom:15px;
+    font-size:40px;
+    text-shadow:0 0 10px cyan;
+}
+
+.info{
+    margin-bottom:15px;
+    display:flex;
+    justify-content:center;
+    gap:20px;
+    flex-wrap:wrap;
+}
+
+.card{
+    background:rgba(255,255,255,0.15);
+    padding:10px 20px;
+    border-radius:15px;
+    backdrop-filter:blur(10px);
+    font-size:18px;
+}
+
+.board{
+    display:grid;
+    grid-template-columns:repeat(8,60px);
+    gap:4px;
+    justify-content:center;
+}
+
+.cell{
+    width:60px;
+    height:60px;
+    background:#0099ff;
+    border-radius:10px;
+    cursor:pointer;
+    transition:.3s;
+    border:2px solid rgba(255,255,255,.2);
+}
+
+.cell:hover{
+    transform:scale(1.05);
+    background:#00bfff;
+}
+
+.hit{
+    background:#ff3030 !important;
+    animation:boom .4s ease;
+}
+
+.miss{
+    background:#5f5f5f !important;
+}
+
+@keyframes boom{
+    0%{transform:scale(0.5);}
+    100%{transform:scale(1);}
+}
+
+button{
+    margin-top:20px;
+    padding:12px 30px;
+    border:none;
+    border-radius:20px;
+    background:#00e5ff;
+    color:#000;
+    font-weight:bold;
+    font-size:16px;
+    cursor:pointer;
+    transition:.3s;
+}
+
+button:hover{
+    transform:scale(1.05);
+    background:white;
+}
+
+.message{
+    margin-top:15px;
+    font-size:22px;
+    font-weight:bold;
+    color:#ffff00;
+}
+
+@media(max-width:600px){
+
+.board{
+    grid-template-columns:repeat(8,40px);
+}
+
+.cell{
+    width:40px;
+    height:40px;
+}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>⚓ BATTLE SHIP ⚓</h1>
+
+<div class="info">
+    <div class="card">
+        🎯 Skor: <span id="score">0</span>
+    </div>
+
+    <div class="card">
+        🚢 Kapal Tersisa:
+        <span id="shipCount">10</span>
+    </div>
+</div>
+
+<div id="board" class="board"></div>
+
+<div class="message" id="message">
+    Klik kotak untuk menyerang!
+</div>
+
+<button onclick="restartGame()">
+    🔄 Main Lagi
+</button>
+
+</div>
+
+<script>
+const board = document.getElementById("board");
+const scoreText = document.getElementById("score");
+const shipText = document.getElementById("shipCount");
+const message = document.getElementById("message");
+
+const size = 8;
+let score = 0;
+let ships = [];
+let shipsLeft = 10;
+
+function createShips(){
+    ships = [];
+
+    while(ships.length < 10){
+        let random = Math.floor(Math.random() * (size*size));
+
+        if(!ships.includes(random)){
+            ships.push(random);
+        }
+    }
+}
+
+function createBoard(){
+
+    board.innerHTML="";
+    score=0;
+    shipsLeft=10;
+
+    scoreText.textContent=score;
+    shipText.textContent=shipsLeft;
+
+    createShips();
+
+    for(let i=0;i<size*size;i++){
+
+        const cell=document.createElement("div");
+        cell.classList.add("cell");
+        cell.dataset.id=i;
+
+        cell.addEventListener("click", function(){
+
+            if(
+                cell.classList.contains("hit") ||
+                cell.classList.contains("miss")
+            ){
+                return;
+            }
+
+            if(ships.includes(i)){
+
+                cell.classList.add("hit");
+
+                score +=100;
+                shipsLeft--;
+
+                scoreText.textContent=score;
+                shipText.textContent=shipsLeft;
+
+                message.innerHTML="💥 HIT! Kapal Musuh Kena!";
+
+                if(shipsLeft===0){
+
+                    message.innerHTML=
+                    "🏆 SELAMAT! SEMUA KAPAL MUSUH HANCUR!";
+
+                    document
+                    .querySelectorAll(".cell")
+                    .forEach(c=>c.style.pointerEvents="none");
+                }
+
+            }else{
+
+                cell.classList.add("miss");
+
+                message.innerHTML=
+                "🌊 MISS! Tidak ada kapal.";
+            }
+        });
+
+        board.appendChild(cell);
+    }
+}
+
+function restartGame(){
+
+    document
+    .querySelectorAll(".cell")
+    .forEach(c=>c.style.pointerEvents="auto");
+
+    createBoard();
+
+    message.innerHTML=
+    "Klik kotak untuk menyerang!";
+}
+
+createBoard();
+</script>
+
+</body>
+</html>
